@@ -324,6 +324,9 @@ function handleDragOver(e) {
                 left: x,
                 top: y
             });
+            // newImage.toObject = function() {
+            //   return { name: 'sign' };
+            // };
             canvas.add(newImage);
             doc.on('mousedown', function() {  //------------------------****
             console.log(this)
