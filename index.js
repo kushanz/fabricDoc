@@ -3,11 +3,14 @@ import './style.css';
 import {fabric} from 'fabric';
 import $ from "jquery";
 
+var canvascontainer = document.querySelector('.canvas-container');
+var canvasObject = document.querySelector('canvas');
 var canvas = new fabric.Canvas('mycanvas', {
   preserveObjectStacking:true
 });
 // canvas.backgroundColor = 'yellow';
 var docObj;
+var newImage;
 var evented = false;
 var doc;
 var rect = new fabric.Rect({
@@ -44,7 +47,7 @@ var rect = new fabric.Rect({
 
  canvas.centerObject(rect);
         // canvas.add(docInstance);
-        canvas.add(rect);
+        // canvas.add(rect);
   //       canvas.item(1).set({
   //   borderColor: 'red',
   //   cornerColor: 'green',
@@ -74,8 +77,8 @@ docObj = new fabric.Image.fromURL('https://picsum.photos/450/500',//doc image ur
         // doc.on('moving', function(e) {
         //   console.log(e.target)
         // });
-        doc.on('moving', docMove);
-        doc.on('mousedown', docMouseDown);
+        // doc.on('moving', docMove);
+        // doc.on('mousedown', docMouseDown);
 
         
 })
@@ -122,7 +125,10 @@ function resetZoom() {
 
 $('#resetzoom').click(function(e) {
   // canvas.item(0).selectable = false
-  docResize()
+  console.log(canvas)
+  canvas.item(1).left = canvas.item(1).left - doc.left;
+  canvas.item(1).top = canvas.item(1).top - doc.top;
+  canvas.item(1).setCoords();
   resetZoom()
 })
 
@@ -218,36 +224,127 @@ function onKeyDown(event) {
    }
 }
 // --------------------------canvas relative movement ---------------------------
-// doc.on('object:moving', function(e) {
-//   console.log(e)
+// canvas.on('mouse:down', function(e) {
+//   docMouseDown()
+// });
+// canvas.on('object:moving', function(e) {
+//   docMove()
 // });
 // register()
 function docMouseDown(){
  this.mousesDownLeft = this.left;
  this.mousesDownTop = this.top;
- this.signLeft = rect.left;
- this.signTop = rect.top;
+ this.signLeft = newImage.left;
+ this.signTop = newImage.top;
 }
 function docMove(){
- rect.left = this.signLeft+ this.left - this.mousesDownLeft ;
- rect.top = this.signTop+ this.top- this.mousesDownTop;
- rect.setCoords();
+ newImage.left = this.signLeft+ this.left - this.mousesDownLeft ;
+ newImage.top = this.signTop+ this.top- this.mousesDownTop;
+ newImage.setCoords();
 }
 function docResize() {
-  rect.left = rect.left - doc.left;
-  rect.top = rect.top - doc.top;
-  rect.setCoords();
+  newImage.left = newImage.left - doc.left;
+  newImage.top = newImage.top - doc.top;
+  newImage.setCoords();
 }
-function register(){
- if(evented) return;
- docObj.on('moving', docMove);
- docObj.on('mousedown', docMouseDown);
- rect.on('rotating', docRotating);
- evented = true;
-}
+// function register(){
+//  if(evented) return;
+//  docObj.on('moving', docMove);
+//  docObj.on('mousedown', docMouseDown);
+//  rect.on('rotating', docRotating);
+//  evented = true;
+// }
 // function unRegister(){
 //  doc.off('moving');
 //  doc.off('mousedown');
 //  rect.on('rotating');
 //  evented = false;
 // }
+
+
+// drag outside images to canvas ----------------------------------
+var imageOffsetX, imageOffsetY;
+var images = document.querySelectorAll('.items img');
+[].forEach.call(images, function (img) {
+  img.addEventListener('dragstart', handleDragStart, false);
+  img.addEventListener('dragend', handleDragEnd, false);
+});
+canvascontainer.addEventListener('drop',handleDrop, false)
+
+function handleDragStart(e) {
+            [].forEach.call(images, function (img) {
+                img.classList.remove('img_dragging');
+            });
+            this.classList.add('img_dragging');
+          
+          
+            var imageOffset = $(this).offset();
+            imageOffsetX = e.clientX - imageOffset.left;
+            imageOffsetY = e.clientY - imageOffset.top;
+        }
+function handleDragEnd(e) {
+            [].forEach.call(images, function (img) {
+                img.classList.remove('img_dragging');
+            });
+        }
+function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'copy';
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            this.classList.add('over');
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('over');
+        }
+
+        function handleDrop(e) {
+            e = e || window.event;
+            if (e.preventDefault) {
+              e.preventDefault();
+            }
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            var img = document.querySelector('.items img.img_dragging');
+            console.log('event: ', e);
+          
+            var offset = $(canvasObject).offset();
+            var y = e.clientY - (offset.top + imageOffsetY);
+            var x = e.clientX - (offset.left + imageOffsetX);
+          
+            var newImage = new fabric.Image(img, {
+                width: img.width,
+                height: img.height,
+                left: x,
+                top: y
+            });
+            canvas.add(newImage);
+            doc.on('mousedown', function() {  //------------------------****
+            console.log(this)
+                this.mousesDownLeft = this.left;
+                this.mousesDownTop = this.top;
+                this.signLeft = newImage.left;
+                this.signTop = newImage.top;
+            });
+            doc.on('moving', function() {
+                newImage.left = this.signLeft+ this.left - this.mousesDownLeft ;
+                newImage.top = this.signTop+ this.top- this.mousesDownTop;
+                newImage.setCoords();
+            });
+
+            return false;
+
+        }
+      $(document).keydown(function(event){
+    if (event.which == 8) {
+        if (canvas.getActiveObject()) {
+            canvas.getActiveObject().remove();
+        }
+    }
+});
