@@ -61,15 +61,15 @@ canvas.bringForward(rect)
 docObj = new fabric.Image.fromURL('https://picsum.photos/450/500',//doc image url
      function(myDoc) {
         doc = myDoc.set({ 
+                id:"docimage",
                 left: 0,
                 top: 0 ,
                 width:450, //set canvas eidth
                 height:500, //set canvas height
-                hasControls:false,
-                lockMovementX: false,
-                lockMovementY:false,
-                selectable:false,
-                sendBackwards:true
+                selectable: true,
+                hasBorders: false,
+                hasControls: false,
+                hasRotatingPoint: false
                     // other options 
             });
         canvas.add(doc);
@@ -82,27 +82,49 @@ docObj = new fabric.Image.fromURL('https://picsum.photos/450/500',//doc image ur
 
         
 })
+// docObj = new Image()
+// var path = "https://picsum.photos/450/500";
+// var height = [],width = [];
+// docObj.src = path;
+// docObj.onload = function() {
+//   let docimage = new fabric.Image(docObj);
+//   height.push(docObj.height)
+//   width.push(docObj.width)
+//   canvas.setHeight(height);
+//   canvas.setWidth(width);
+//   docimage.set({
+//     id: 'docimage',
+//     left: 0,
+//     top: 0,
+//     selectable: true,
+//     hasBorders: false,
+//     hasControls: false,
+//     hasRotatingPoint: false
+//   })
+//   canvas.add(docimage)
+// }
 
 canvas.renderAll();
   
 
 // mouse wheel zooming function
-canvas.on('mouse:wheel', function(opt) {
-  var delta = opt.e.deltaY;
-  var zoom = canvas.getZoom();
-  zoom *= 0.999 ** delta;
-  if (zoom > 20) zoom = 20;
-  // if (zoom < 0.01) zoom = 0.01;
-  if (zoom < 1) {
-    zoom = 1;
-    canvas.setZoom(1)
-    canvas.setViewportTransform([1,0,0,1,0,0]); 
-  }
-  canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
-  opt.e.preventDefault();
-  opt.e.stopPropagation();
+// canvas.on('mouse:wheel', function(opt) {
+//   var delta = opt.e.deltaY;
+//   console.log(delta)
+//   var zoom = canvas.getZoom();
+//   zoom *= 0.999 ** delta;
+//   if (zoom > 20) zoom = 20;
+//   // if (zoom < 0.01) zoom = 0.01;
+//   if (zoom < 1) {
+//     zoom = 1;
+//     canvas.setZoom(1)
+//     canvas.setViewportTransform([1,0,0,1,0,0]); 
+//   }
+//   canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
+//   opt.e.preventDefault();
+//   opt.e.stopPropagation();
 
-});
+// });
 
 
 // reset zoom
@@ -125,32 +147,45 @@ function resetZoom() {
 
 $('#resetzoom').click(function(e) {
   // canvas.item(0).selectable = false
-  console.log(canvas)
-  canvas.item(1).left = canvas.item(1).left - doc.left;
-  canvas.item(1).top = canvas.item(1).top - doc.top;
-  canvas.item(1).setCoords();
-  resetZoom()
+  // console.log(canvas)
+  // canvas.item(1).left = canvas.item(1).left - doc.left;
+  // canvas.item(1).top = canvas.item(1).top - doc.top;
+  // canvas.item(1).setCoords();
+  doc.set({
+    top:0,
+    left:0,
+    width:450,
+    height:500
+  })
+  canvas.setViewportTransform([1,0,0,1,0,0]); 
+  canvas.renderAll()
 })
 
 // zoom in
 $('#zoomin').click(function() {
-  if (canvas.getZoom() < 3) {
-    // canvas.setZoom(canvas.getZoom() + 0.1);
-    console.log(canvas.width*canvas.getZoom())
-    // let initzoom = canvas.getZoom();
-    // canvas.zoomToPoint({ x: 'center', y: 'center' },initzoom+1 );
-    canvas.zoomToPoint(new fabric.Point(canvas.width / 2, canvas.height / 2), canvas.getZoom() / 0.9);
+  // if (canvas.getZoom() < 3) {
+  //   // canvas.setZoom(canvas.getZoom() + 0.1);
+  //   console.log(canvas.width*canvas.getZoom())
+  //   // let initzoom = canvas.getZoom();
+  //   // canvas.zoomToPoint({ x: 'center', y: 'center' },initzoom+1 );
+  //   canvas.zoomToPoint(new fabric.Point(canvas.width / 2, canvas.height / 2), canvas.getZoom() / 0.9);
+  // }
+   if (canvas.getZoom() < 2) {
+    canvas.setZoom(canvas.getZoom() + 0.1);
   }
 });
 
 // zoom out
 $('#zoomout').click(function() {
    console.log(canvas.width*canvas.getZoom())
-  if (canvas.getZoom() < 1.1) {
-    canvas.item(0).selectable = false
-    canvas.setViewportTransform([1,0,0,1,0,0]); 
-  } else {
-    canvas.zoomToPoint(new fabric.Point(canvas.width / 2, canvas.height / 2), canvas.getZoom() / 1.1);
+  // if (canvas.getZoom() < 1.1) { 
+  //   canvas.item(0).selectable = false
+  //   canvas.setViewportTransform([1,0,0,1,0,0]); 
+  // } else {
+  //   canvas.zoomToPoint(new fabric.Point(canvas.width / 2, canvas.height / 2), canvas.getZoom() / 1.1);
+  // };
+  if (canvas.getZoom() != 1) {
+    canvas.setZoom(canvas.getZoom() - 0.1)
   };
 
 });
@@ -319,6 +354,7 @@ function handleDragOver(e) {
             var x = e.clientX - (offset.left + imageOffsetX);
           
             var newImage = new fabric.Image(img, {
+                id:'signimage',
                 width: img.width,
                 height: img.height,
                 left: x,
@@ -328,26 +364,162 @@ function handleDragOver(e) {
             //   return { name: 'sign' };
             // };
             canvas.add(newImage);
-            doc.on('mousedown', function() {  //------------------------****
-            console.log(this)
-                this.mousesDownLeft = this.left;
-                this.mousesDownTop = this.top;
-                this.signLeft = newImage.left;
-                this.signTop = newImage.top;
-            });
-            doc.on('moving', function() {
-                newImage.left = this.signLeft+ this.left - this.mousesDownLeft ;
-                newImage.top = this.signTop+ this.top- this.mousesDownTop;
-                newImage.setCoords();
-            });
-
+            //------------------------**** *************************************************
+            // doc.on('mousedown', function() {  
+            // console.log(this)
+            //     this.mousesDownLeft = this.left;
+            //     this.mousesDownTop = this.top;
+            //     this.signLeft = newImage.left;
+            //     this.signTop = newImage.top;
+            // });
+            // doc.on('moving', function(e) {
+            //     // newImage.left = this.signLeft+ this.left - this.mousesDownLeft ;
+            //     // newImage.top = this.signTop+ this.top- this.mousesDownTop;
+            //     // newImage.setCoords();
+            //     var obj;
+            //     obj = e.target;
+            //     obj.setCoords();
+            //     var boundingRect = obj.getBoundingRect();
+            //     var z = canvas.getZoom();
+            //     var viewportMatrix = canvas.viewportTransform;
+            //     console.log(viewportMatrix)
+            //     boundingRect.top = (boundingRect.top - viewportMatrix[5]) / z;
+            //     boundingRect.left = (boundingRect.left - viewportMatrix[4]) / z;
+            //     boundingRect.width /= z;
+            //     boundingRect.height /= z;
+  
+            //     var canvasHeight = canvas.getHeight / z,
+            //         canvasWidth = canvas.getWidth / z;
+            //     if(boundingRect.top > 0){
+            //         obj.top = 0;
+            //     }
+            //     if(boundingRect.left > 0){
+            //         obj.left = 0;
+            //     }
+            //     if (boundingRect.top < canvasHeight - boundingRect.height){
+            //         obj.top = canvasHeight - boundingRect.height;
+            //     }
+            //     if (boundingRect.left < canvasWidth - boundingRect.width){
+            //         obj.left = canvasWidth - boundingRect.width;
+            //     }
+            // });
+            // *******************************************************************************
             return false;
 
         }
-      $(document).keydown(function(event){
-    if (event.which == 8) {
-        if (canvas.getActiveObject()) {
-            canvas.getActiveObject().remove();
+
+
+// another way to do _____________________________________________________________________
+// var sign;
+canvas.on('mouse:down',function(evt) {
+  var active = canvas.getActiveObject();
+  if(active.id == 'signimage') {
+    active.on('moving',function(evt) {
+      preventRectFromLeaving(evt, active);
+    })
+
+  } else if(active.id == 'docimage') {
+// relative movement for signimage
+  // active.lockMovementX = true;
+  // active.lockMovementY = true;
+  // var pointer = canvas.getPointer(evt.e);
+  // origX = pointer.x;
+  // origY = pointer.y;
+  // console.log(canvas.item(1).id)
+ 
+  // newImage.set({
+  //   left: origX,
+  //   top: origY,
+  //   originX: 'left',
+  //   originY: 'top',
+  // })
+
+    canvas.discardActiveObject();
+    active.lockMovementX = false;
+    active.lockMovementY = false;
+    var lastLeft = active.left,
+        lastTop = active.top;
+        active.on('moving', function(evt) {
+        // sets boundary area for image when zoomed
+        // THIS IS THE PART THAT DOESN'T WORK
+        active.setCoords();
+        // SET BOUNDING RECT TO 'active'
+        var boundingRect = active.getBoundingRect();
+        var zoom = canvas.getZoom();
+        var viewportMatrix = canvas.viewportTransform;
+        // scales bounding rect when zoomed
+        boundingRect.top = (boundingRect.top - viewportMatrix[5]) / zoom;
+        boundingRect.left = (boundingRect.left - viewportMatrix[4]) / zoom;
+        boundingRect.width /= zoom;
+        boundingRect.height /= zoom;
+
+        var canvasHeight = canvas.height / zoom,
+          canvasWidth = canvas.width / zoom,
+          rTop = boundingRect.top + boundingRect.height,
+          rLeft = boundingRect.left + boundingRect.width;
+        // checks top left
+        if (rTop < canvasHeight || rLeft < canvasWidth) {
+          active.top = Math.max(active.top, canvasHeight - boundingRect.height);
+          active.left = Math.max(active.left, canvasWidth - boundingRect.width);
         }
-    }
-});
+        // checks bottom right
+        if (rTop > 0 || rLeft > 0) {
+          active.top = Math.min(active.top, canvas.height - boundingRect.height +
+            active.top - boundingRect.top);
+          active.left = Math.min(active.left, canvas.width - boundingRect.width +
+          active.left - boundingRect.left);
+        }
+         canvas.getObjects().forEach(function(o) {
+            if(o.id === 'signimage') {
+              o.left += active.left - lastLeft;
+              o.top += active.top - lastTop;
+              o.setCoords();
+              }
+          })
+        
+        lastLeft = active.left;
+        lastTop = active.top;
+      });
+  }
+  //  deactivates all objects on mouseup
+      active.on('mouseup', function() {
+        active.off('moving');
+        // canvas.discardActiveObject().renderAll();
+    });
+
+})
+function preventRectFromLeaving(evt, active) {
+
+  var obj = active;
+  obj.setCoords();
+
+  var boundingRect = obj.getBoundingRect();
+
+  var zoom = canvas.getZoom();
+  var viewportMatrix = canvas.viewportTransform;
+
+  boundingRect.top = (boundingRect.top - viewportMatrix[5]) / zoom;
+  boundingRect.left = (boundingRect.left - viewportMatrix[4]) / zoom;
+  boundingRect.width /= zoom;
+  boundingRect.height /= zoom;
+
+
+  var canvasWidth = obj.canvas.width / zoom;
+  var canvasHeight = obj.canvas.height / zoom;
+
+  // if object is too big ignore
+  if (obj.height > obj.canvas.height || obj.width > obj.canvas.width) {
+    return;
+  }
+  if (boundingRect.top < 0 || boundingRect.left < 0) {
+    obj.top = Math.max(obj.top, obj.top - boundingRect.top);
+    obj.left = Math.max(obj.left, obj.left - boundingRect.left);
+  }
+  // bot-right corner
+  if (boundingRect.top + boundingRect.height > canvasHeight || boundingRect.left + boundingRect.width > canvasWidth) {
+    obj.top = Math.min(obj.top, canvasHeight - boundingRect.height + obj.top - boundingRect.top);
+    obj.left = Math.min(obj.left, canvasWidth - boundingRect.width + obj.left - boundingRect.left);
+  }
+
+}
+// _______________________________________________________________________________________
