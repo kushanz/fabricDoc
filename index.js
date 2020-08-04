@@ -147,22 +147,17 @@ function resetZoom() {
 
 $('#resetzoom').click(function(e) {
   let d,s;
-  // canvas.item(0).selectable = false
-  // console.log(canvas)
-  // canvas.item(1).left = canvas.item(1).left - doc.left;
-  // canvas.item(1).top = canvas.item(1).top - doc.top;
-  // canvas.item(1).setCoords();
   canvas.getObjects().forEach(function(o) {
-            if(o.id === 'docimage') {
-              d = o;
-              }
-            else if(o.id === 'signimage') {
-              s = o;
-              s.left = s.left - d.left;
-              s.top = s.top - d.top;
-              s.setCoords();
-            }
-          })
+      if(o.id === 'docimage') {
+        d = o;
+        }
+      else if(o.id === 'signimage') {
+        s = o;
+        s.left = s.left - d.left;
+        s.top = s.top - d.top;
+        s.setCoords();
+      }
+    })
           
   doc.set({
     top:0,
@@ -186,7 +181,7 @@ $('#zoomin').click(function() {
    if (canvas.getZoom() < 2) {
     canvas.setZoom(canvas.getZoom() + 0.1);
   }
-});
+}); 
 
 // zoom out
 $('#zoomout').click(function() {
@@ -197,9 +192,13 @@ $('#zoomout').click(function() {
   // } else {
   //   canvas.zoomToPoint(new fabric.Point(canvas.width / 2, canvas.height / 2), canvas.getZoom() / 1.1);
   // };
-  if (canvas.getZoom() != 1) {
+  if (canvas.getZoom() < 1.2) {
+      doc.set({ top:0, left:0, width:450, height:500 })
+      canvas.setViewportTransform([1,0,0,1,0,0]); 
+      canvas.renderAll()
+  } else {
     canvas.setZoom(canvas.getZoom() - 0.1)
-  };
+  }
 
 });
 
