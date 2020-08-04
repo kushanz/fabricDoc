@@ -146,19 +146,24 @@ function resetZoom() {
 }
 
 $('#resetzoom').click(function(e) {
+  let d,s;
   // canvas.item(0).selectable = false
   // console.log(canvas)
   // canvas.item(1).left = canvas.item(1).left - doc.left;
   // canvas.item(1).top = canvas.item(1).top - doc.top;
   // canvas.item(1).setCoords();
   canvas.getObjects().forEach(function(o) {
-            if(o.id === 'signimage') {
-              o.left = o.left - docObj.left;
-              o.top = o.top - docObj.top;
-              o.setCoords();
+            if(o.id === 'docimage') {
+              d = o;
               }
+            else if(o.id === 'signimage') {
+              s = o;
+              s.left = s.left - d.left;
+              s.top = s.top - d.top;
+              s.setCoords();
+            }
           })
-  canvas.setZoom(1);
+          
   doc.set({
     top:0,
     left:0,
