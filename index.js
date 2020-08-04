@@ -151,6 +151,14 @@ $('#resetzoom').click(function(e) {
   // canvas.item(1).left = canvas.item(1).left - doc.left;
   // canvas.item(1).top = canvas.item(1).top - doc.top;
   // canvas.item(1).setCoords();
+  canvas.getObjects().forEach(function(o) {
+            if(o.id === 'signimage') {
+              o.left = o.left - docObj.left;
+              o.top = o.top - docObj.top;
+              o.setCoords();
+              }
+          })
+  canvas.setZoom(1);
   doc.set({
     top:0,
     left:0,
@@ -440,6 +448,7 @@ canvas.on('mouse:down',function(evt) {
     var lastLeft = active.left,
         lastTop = active.top;
         active.on('moving', function(evt) {
+          // debugger;
         // sets boundary area for image when zoomed
         // THIS IS THE PART THAT DOESN'T WORK
         active.setCoords();
@@ -448,6 +457,7 @@ canvas.on('mouse:down',function(evt) {
         var zoom = canvas.getZoom();
         var viewportMatrix = canvas.viewportTransform;
         // scales bounding rect when zoomed
+        // debugger
         boundingRect.top = (boundingRect.top - viewportMatrix[5]) / zoom;
         boundingRect.left = (boundingRect.left - viewportMatrix[4]) / zoom;
         boundingRect.width /= zoom;
@@ -476,7 +486,7 @@ canvas.on('mouse:down',function(evt) {
               o.setCoords();
               }
           })
-        
+        debugger
         lastLeft = active.left;
         lastTop = active.top;
       });
