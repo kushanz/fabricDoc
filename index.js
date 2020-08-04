@@ -431,21 +431,6 @@ canvas.on('mouse:down',function(evt) {
     })
 
   } else if(active.id == 'docimage') {
-// relative movement for signimage
-  // active.lockMovementX = true;
-  // active.lockMovementY = true;
-  // var pointer = canvas.getPointer(evt.e);
-  // origX = pointer.x;
-  // origY = pointer.y;
-  // console.log(canvas.item(1).id)
- 
-  // newImage.set({
-  //   left: origX,
-  //   top: origY,
-  //   originX: 'left',
-  //   originY: 'top',
-  // })
-
     canvas.discardActiveObject();
     active.lockMovementX = false;
     active.lockMovementY = false;
