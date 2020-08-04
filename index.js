@@ -45,7 +45,7 @@ var rect = new fabric.Rect({
 // })
 // docInstance.lockMovementX = false
 
- canvas.centerObject(rect);
+//  canvas.centerObject(rect);
         // canvas.add(docInstance);
         // canvas.add(rect);
   //       canvas.item(1).set({
@@ -55,7 +55,7 @@ var rect = new fabric.Rect({
   //   transparentCorners: false
   // });
   // canvas.item(0).selectable = false;
-canvas.bringForward(rect)
+// canvas.bringForward(rect)
 
 
 docObj = new fabric.Image.fromURL('https://picsum.photos/450/500',//doc image url
@@ -129,23 +129,6 @@ canvas.renderAll();
 
 // reset zoom
 function resetZoom() {
-  // canvas.setZoom(1);
-  // canvas.setDimensions({
-  //   top:0,left:0,
-  //   width: 450,
-  //   height: 500
-  // });
-  doc.set({
-    top:0,
-    left:0,
-    width:450,
-    height:500
-  })
-  canvas.setViewportTransform([1,0,0,1,0,0]); 
-  canvas.renderAll()
-}
-
-$('#resetzoom').click(function(e) {
   let d,s;
   canvas.getObjects().forEach(function(o) {
       if(o.id === 'docimage') {
@@ -157,16 +140,14 @@ $('#resetzoom').click(function(e) {
         s.top = s.top - d.top;
         s.setCoords();
       }
-    })
-          
-  doc.set({
-    top:0,
-    left:0,
-    width:450,
-    height:500
-  })
+    })        
+  doc.set({ top:0, left:0, width:450, height:500 })
   canvas.setViewportTransform([1,0,0,1,0,0]); 
   canvas.renderAll()
+}
+
+$('#resetzoom').click(function(e) {
+  resetZoom();
 })
 
 // zoom in
@@ -193,9 +174,7 @@ $('#zoomout').click(function() {
   //   canvas.zoomToPoint(new fabric.Point(canvas.width / 2, canvas.height / 2), canvas.getZoom() / 1.1);
   // };
   if (canvas.getZoom() < 1.2) {
-      doc.set({ top:0, left:0, width:450, height:500 })
-      canvas.setViewportTransform([1,0,0,1,0,0]); 
-      canvas.renderAll()
+      resetZoom()
   } else {
     canvas.setZoom(canvas.getZoom() - 0.1)
   }
